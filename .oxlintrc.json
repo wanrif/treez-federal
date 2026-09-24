@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "unicorn", "oxc", "eslint"],
-  "ignorePatterns": ["dist/**", "coverage/**", "vendor/**", "test/snapshots/**"],
+  "ignorePatterns": ["dist/**", "coverage/**", "vendor/**", "test/snapshots/**", ".agents/**"],
   "categories": {
     "correctness": "error"
   },

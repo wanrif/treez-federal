@@ -1,48 +1,48 @@
 {
-  "name": "@wanrif/treez-federal",
-  "version": "0.0.0",
-  "description": "Micro frontend plugin for vite.",
-  "homepage": "https://github.com/wanrif/treez-federal#readme",
-  "bugs": {
-    "url": "https://github.com/wanrif/treez-federal/issues"
-  },
-  "license": "MIT",
-  "author": "Wanrif",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/wanrif/treez-federal.git"
-  },
-  "files": [
-    "dist"
+  "name": "treez-federal-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Next.js Multi-Zones architecture for Vite and Rolldown with first-class TanStack Router integration.",
+  "workspaces": [
+    "packages/*",
+    "examples/*"
   ],
   "type": "module",
   "exports": {
-    ".": "./dist/index.mjs",
+    ".": "./packages/treez-federal/dist/index.js",
+    "./router": "./packages/treez-federal/dist/router.js",
+    "./runtime": "./packages/treez-federal/dist/runtime.js",
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "tsdown",
-    "dev": "tsdown --watch",
-    "test": "vitest",
+    "build": "bun run --cwd packages/treez-federal build",
+    "dev": "bun run --cwd packages/treez-federal dev",
+    "test": "vitest run tests",
     "typecheck": "tsc --noEmit",
-    "publint": "publint",
-    "release": "bumpp",
-    "prepublishOnly": "pnpm run build",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
-    "check": "bun run format && bun run lint && bun run build"
+    "check": "bun run format && bun run lint && bun run build && bun run test"
   },
   "devDependencies": {
+    "@tanstack/react-router": "^1.170.39",
     "@types/node": "^26.1.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/use-sync-external-store": "^1.7.0",
     "bumpp": "^12.3.0",
     "oxfmt": "^0.70.0",
     "oxlint": "^1.85.0",
     "oxlint-tsgolint": "^7.0.2002",
     "publint": "^0.3.24",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "seroval": "^1.6.7",
     "tsdown": "^0.23.0",
     "typescript": "^7.0.2",
+    "use-sync-external-store": "^1.7.0",
+    "vite": "^8.3.1",
     "vitest": "^5.0.1"
   }
 }

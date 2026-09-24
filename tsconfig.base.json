@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "lib": ["es2023", "dom", "dom.iterable"],
+    "moduleDetection": "force",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "treez-federal": ["./packages/treez-federal/src/index.ts"],
+      "treez-federal/router": ["./packages/treez-federal/src/runtime/router.ts"],
+      "treez-federal/runtime": ["./packages/treez-federal/src/runtime/index.ts"],
+      "treez-federal/*": ["./packages/treez-federal/src/*"]
+    }
+  }
+}

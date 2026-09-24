@@ -1,0 +1,247 @@
+import { RESOLVED_VIRTUAL_SHARED_PREFIX, VIRTUAL_SHARED_PREFIX } from '../constants';
+
+const KNOWN_REACT_EXPORTS: readonly string[] = [
+  'Children',
+  'Component',
+  'Fragment',
+  'Profiler',
+  'PureComponent',
+  'StrictMode',
+  'Suspense',
+  'cloneElement',
+  'createContext',
+  'createElement',
+  'createRef',
+  'forwardRef',
+  'isValidElement',
+  'lazy',
+  'memo',
+  'startTransition',
+  'useActionState',
+  'useCallback',
+  'useContext',
+  'useDebugValue',
+  'useDeferredValue',
+  'useEffect',
+  'useId',
+  'useImperativeHandle',
+  'useInsertionEffect',
+  'useLayoutEffect',
+  'useMemo',
+  'useOptimistic',
+  'useReducer',
+  'useRef',
+  'useState',
+  'useSyncExternalStore',
+  'useTransition',
+  'version',
+];
+
+const KNOWN_REACT_DOM_EXPORTS: readonly string[] = [
+  'createPortal',
+  'createRoot',
+  'hydrateRoot',
+  'findDOMNode',
+  'flushSync',
+  'unmountComponentAtNode',
+  'version',
+];
+
+const KNOWN_JSX_EXPORTS: readonly string[] = ['Fragment', 'jsx', 'jsxs'];
+
+const KNOWN_JSX_DEV_EXPORTS: readonly string[] = ['Fragment', 'jsxDEV'];
+
+const KNOWN_ROUTER_EXPORTS: readonly string[] = [
+  'FileRoute',
+  'FileRouteLoader',
+  'LazyRoute',
+  'MatchRoute',
+  'NotFoundRoute',
+  'Outlet',
+  'RootRoute',
+  'Route',
+  'RouteApi',
+  'Router',
+  'RouterContextProvider',
+  'RouterProvider',
+  'createBrowserHistory',
+  'createControlledPromise',
+  'createFileRoute',
+  'createHashHistory',
+  'createHistory',
+  'createLazyFileRoute',
+  'createLazyRoute',
+  'createLink',
+  'createMemoryHistory',
+  'createRootRoute',
+  'createRootRouteWithContext',
+  'createRoute',
+  'createRouteMask',
+  'createRouter',
+  'createRouterConfig',
+  'createSerializationAdapter',
+  'getRouteApi',
+  'lazyRouteComponent',
+  'rootRouteId',
+  'rootRouteWithContext',
+  'useMatchRoute',
+  'useNavigate',
+  'useParams',
+  'useRouteContext',
+  'useRouter',
+  'useRouterState',
+  'useSearch',
+  'useLocation',
+  'useMatches',
+  'Link',
+];
+
+export function getKnownSharedExports(pkgName: string): readonly string[] | null {
+  if (pkgName === 'react') {
+    return KNOWN_REACT_EXPORTS;
+  }
+  if (pkgName === 'react-dom') {
+    return KNOWN_REACT_DOM_EXPORTS;
+  }
+  if (pkgName === 'react/jsx-runtime') {
+    return KNOWN_JSX_EXPORTS;
+  }
+  if (pkgName === 'react/jsx-dev-runtime') {
+    return KNOWN_JSX_DEV_EXPORTS;
+  }
+  if (pkgName === '@tanstack/react-router') {
+    return KNOWN_ROUTER_EXPORTS;
+  }
+  return null;
+}
+
+export function isSharedPackage(id: string, sharedList: readonly string[]): boolean {
+  for (const pkg of sharedList) {
+    if (id === pkg || id.startsWith(pkg + '/')) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export function toSharedVirtualId(pkgName: string): string {
+  return VIRTUAL_SHARED_PREFIX + pkgName;
+}
+
+export function toResolvedSharedVirtualId(pkgName: string): string {
+  return RESOLVED_VIRTUAL_SHARED_PREFIX + pkgName;
+}
+
+export function fromSharedVirtualId(id: string): string | null {
+  if (id.startsWith(RESOLVED_VIRTUAL_SHARED_PREFIX)) {
+    return id.slice(RESOLVED_VIRTUAL_SHARED_PREFIX.length);
+  }
+  if (id.startsWith(VIRTUAL_SHARED_PREFIX)) {
+    return id.slice(VIRTUAL_SHARED_PREFIX.length);
+  }
+  return null;
+}
+
+export async function extractPackageExports(pkgName: string): Promise<string[]> {
+  const known = getKnownSharedExports(pkgName);
+  if (known) {
+    return [...known];
+  }
+
+  try {
+    const mod = (await import(pkgName)) as Record<string, unknown>;
+    const keys = Object.keys(mod).filter(function filterKey(k: string): boolean {
+      return k !== 'default' && !k.startsWith('__');
+    });
+    return keys;
+  } catch {
+    return [];
+  }
+}
+
+const RESERVED_IDENTIFIERS = new Set([
+  'break',
+  'case',
+  'catch',
+  'class',
+  'const',
+  'continue',
+  'debugger',
+  'default',
+  'delete',
+  'do',
+  'else',
+  'export',
+  'extends',
+  'finally',
+  'for',
+  'function',
+  'if',
+  'import',
+  'in',
+  'instanceof',
+  'new',
+  'return',
+  'super',
+  'switch',
+  'this',
+  'throw',
+  'try',
+  'typeof',
+  'var',
+  'void',
+  'while',
+  'with',
+  'yield',
+  'let',
+  'await',
+  'enum',
+  'null',
+  'true',
+  'false',
+]);
+
+const VALID_IDENTIFIER_REGEX = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
+
+export function createSharedVirtualModule(pkgName: string, exportKeys?: string[]): string {
+  const known = getKnownSharedExports(pkgName);
+  const keys = exportKeys && exportKeys.length > 0 ? exportKeys : known ? [...known] : [];
+
+  const safeKeys = keys.filter(function validateKey(k: string): boolean {
+    return VALID_IDENTIFIER_REGEX.test(k) && !RESERVED_IDENTIFIERS.has(k);
+  });
+
+  const exportStatements = safeKeys
+    .map(function mapKey(key: string): string {
+      return `export const ${key} = _sharedModule ? _sharedModule[${JSON.stringify(key)}] : undefined;`;
+    })
+    .join('\n');
+
+  const pkgLiteral = JSON.stringify(pkgName);
+
+  return `// Virtual shared proxy for ${pkgLiteral} generated by treez-federal
+function _getSharedContainer() {
+  if (typeof window !== 'undefined' && window.__TREEZ_FEDERAL_SHARED__) {
+    return window.__TREEZ_FEDERAL_SHARED__;
+  }
+  return null;
+}
+
+const _container = _getSharedContainer();
+const _sharedModule = _container ? _container.get(${pkgLiteral}) : undefined;
+
+if (!_sharedModule && typeof window !== 'undefined') {
+  console.warn(
+    '[treez-federal] Shared module ' + ${pkgLiteral} + ' was not found in window.__TREEZ_FEDERAL_SHARED__. ' +
+    'Ensure host orchestrator mounts this zone and populates shared dependencies.'
+  );
+}
+
+const _defaultExport = _sharedModule && _sharedModule.default !== undefined
+  ? _sharedModule.default
+  : _sharedModule;
+
+export default _defaultExport;
+${exportStatements}
+`;
+}
