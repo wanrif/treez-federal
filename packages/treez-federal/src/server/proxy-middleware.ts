@@ -81,18 +81,23 @@ export function createProxyMiddleware(options: ProxyMiddlewareOptions): Middlewa
       return;
     }
 
-    const match = matchZone(rawUrl, options.zones);
+    let matchPath = rawUrl;
+    try {
+      if (rawUrl.includes('://')) {
+        matchPath = new URL(rawUrl).pathname;
+      }
+    } catch {
+      // Keep rawUrl
+    }
+
+    const match = matchZone(matchPath, options.zones);
     if (!match || !match.config.target) {
       next();
       return;
     }
 
     const { zoneName, config } = match;
-    const targetString = config.target;
-    if (!targetString) {
-      next();
-      return;
-    }
+    const targetString = config.target as string;
 
     if (!shouldProxyRequest(req, config.basePath)) {
       next();

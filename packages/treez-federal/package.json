@@ -30,6 +30,7 @@
     "pack": "bun pm pack --destination ./dist",
     "dev": "tsdown --watch",
     "test": "vitest",
+    "coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {

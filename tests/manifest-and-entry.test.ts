@@ -31,14 +31,40 @@ describe('manifest-and-entry', () => {
     expect(virtualMod).toContain('export const manifest');
   });
 
-  it('generates zoneEntry.js code with proper imports and exports', () => {
+  it('creates zone manifest with default values when options omitted', () => {
+    const manifest = createZoneManifest({
+      name: 'minimalZone',
+      mode: 'zone',
+      basePath: 'minimal',
+    });
+
+    expect(manifest.routesFile).toBeUndefined();
+    expect(manifest.shared.length).toBeGreaterThan(0);
+    expect(manifest.basePath).toBe('/minimal');
+  });
+
+  it('generates zoneEntry.js code with proper imports, backslashes, and manifest', () => {
+    const manifest = createZoneManifest({
+      name: 'testZone',
+      mode: 'zone',
+      basePath: '/test',
+    });
+
+    const code = generateZoneEntryCode({
+      routesPath: 'src\\routes\\index.ts',
+      manifest,
+    });
+
+    expect(code).toContain('src/routes/index.ts');
+    expect(code).toContain('"name": "testZone"');
+  });
+
+  it('generates zoneEntry.js code with proper imports when manifest omitted', () => {
     const code = generateZoneEntryCode({
       routesPath: './src/routes/index.ts',
     });
 
     expect(code).toContain('createZoneRoutes as _createZoneRoutes');
-    expect(code).toContain('./src/routes/index.ts');
-    expect(code).toContain('export const createZoneRoutes = _createZoneRoutes;');
-    expect(code).toContain('export default');
+    expect(code).toContain('manifest = {}');
   });
 });

@@ -44,7 +44,7 @@ interface ZoneRendererProps {
   module: ZoneRouteModule;
 }
 
-function findMatchingChildRoute(
+export function findMatchingChildRoute(
   routeTree: AnyRoute,
   currentPath: string,
   basePath: string,
@@ -60,21 +60,20 @@ function findMatchingChildRoute(
   for (const child of children) {
     const childRecord = child as unknown as Record<string, unknown>;
     const optionsRecord = child.options as unknown as Record<string, unknown> | undefined;
-    const rawPath = (childRecord.path || optionsRecord?.path || '/') as string;
-    const childPath = typeof rawPath === 'string' ? rawPath : '/';
+    const rawPath = (childRecord.path ?? optionsRecord?.path ?? '/') as string;
+    const childPath = rawPath.startsWith('/') ? rawPath : '/' + rawPath;
     if (childPath === '/' && (sub === '/' || sub === '')) {
-      return (child.options.component as ComponentType) || null;
+      return (child.options?.component as ComponentType) ?? null;
     }
-    const cleanChild = childPath.startsWith('/') ? childPath : '/' + childPath;
-    if (cleanChild !== '/' && (sub === cleanChild || sub.startsWith(cleanChild + '/'))) {
-      return (child.options.component as ComponentType) || null;
+    if (childPath !== '/' && (sub === childPath || sub.startsWith(childPath + '/'))) {
+      return (child.options?.component as ComponentType) ?? null;
     }
   }
 
   return null;
 }
 
-function ZoneRenderer(props: ZoneRendererProps): ReactElement | null {
+export function ZoneRenderer(props: ZoneRendererProps): ReactElement | null {
   const location = useLocation();
   const { options, module } = props;
 
@@ -119,38 +118,66 @@ function ZoneRenderer(props: ZoneRendererProps): ReactElement | null {
   return null;
 }
 
-function ZoneHostComponent(props: { options: CreateZoneRouteOptions }): ReactElement | null {
-  const { options } = props;
+export function createZoneModuleFetcher(
+  options: Pick<CreateZoneRouteOptions, 'zoneName' | 'basePath' | 'entryUrl'>,
+  onSuccess: (mod: ZoneRouteModule) => void,
+  onError: (err: unknown) => void,
+): () => void {
+  let isCancelled = false;
+
+  loadZoneModule(options.zoneName, {
+    basePath: options.basePath,
+    entryUrl: options.entryUrl,
+  })
+    .then(function onLoadSuccess(mod: ZoneRouteModule): void {
+      if (!isCancelled) {
+        onSuccess(mod);
+      }
+    })
+    .catch(function onLoadError(err: unknown): void {
+      if (!isCancelled) {
+        onError(err);
+      }
+    });
+
+  return function cleanup(): void {
+    isCancelled = true;
+  };
+}
+
+export function ZoneHostComponent(props: {
+  options: CreateZoneRouteOptions;
+  initialLoadState?: {
+    status: 'loading' | 'success' | 'error';
+    module?: ZoneRouteModule;
+    error?: unknown;
+  };
+  hookRunner?: (fn: () => void | (() => void), deps: unknown[]) => void;
+}): ReactElement | null {
+  const { options, initialLoadState, hookRunner } = props;
   const [loadState, setLoadState] = useState<{
     status: 'loading' | 'success' | 'error';
     module?: ZoneRouteModule;
     error?: unknown;
-  }>({
-    status: 'loading',
-  });
+  }>(
+    initialLoadState ?? {
+      status: 'loading',
+    },
+  );
 
-  useEffect(
+  const effect = hookRunner ?? useEffect;
+
+  effect(
     function fetchModule(): () => void {
-      let isCancelled = false;
-
-      loadZoneModule(options.zoneName, {
-        basePath: options.basePath,
-        entryUrl: options.entryUrl,
-      })
-        .then(function onLoadSuccess(mod: ZoneRouteModule): void {
-          if (!isCancelled) {
-            setLoadState({ status: 'success', module: mod });
-          }
-        })
-        .catch(function onLoadError(err: unknown): void {
-          if (!isCancelled) {
-            setLoadState({ status: 'error', error: err });
-          }
-        });
-
-      return function cleanup(): void {
-        isCancelled = true;
-      };
+      return createZoneModuleFetcher(
+        options,
+        function onLoadSuccess(mod: ZoneRouteModule): void {
+          setLoadState({ status: 'success', module: mod });
+        },
+        function onLoadError(err: unknown): void {
+          setLoadState({ status: 'error', error: err });
+        },
+      );
     },
     [options.zoneName, options.basePath, options.entryUrl],
   );

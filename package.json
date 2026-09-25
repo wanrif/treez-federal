@@ -2,7 +2,7 @@
   "name": "treez-federal-monorepo",
   "version": "0.1.0",
   "private": true,
-  "description": "Next.js Multi-Zones architecture for Vite and Rolldown with first-class TanStack Router integration.",
+  "description": "Treez Federal - Micro-Frontend Architecture with Vite, Rolldown and TanStack Router.",
   "workspaces": [
     "packages/*",
     "examples/*"
@@ -20,6 +20,7 @@
     "pack": "bun run --cwd packages/treez-federal pack",
     "dev": "bun run --cwd packages/treez-federal dev",
     "test": "vitest run tests",
+    "coverage": "vitest run tests --coverage",
     "typecheck": "tsc --noEmit",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
@@ -35,6 +36,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@types/use-sync-external-store": "^1.7.0",
+    "@vitest/coverage-v8": "5.0.1",
     "bumpp": "^12.3.0",
     "oxfmt": "^0.70.0",
     "oxlint": "^1.85.0",

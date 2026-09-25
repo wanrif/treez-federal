@@ -9,7 +9,8 @@ export function matchZone(
   pathname: string,
   zones: Record<string, HostZoneConfig>,
 ): ZoneMatch | null {
-  const urlPath = pathname.split('?')[0].split('#')[0];
+  const cleanPath = pathname.startsWith('/') ? pathname : '/' + pathname;
+  const urlPath = cleanPath.split('?')[0].split('#')[0];
 
   for (const [zoneName, config] of Object.entries(zones)) {
     const base = normalizeBasePath(config.basePath);
@@ -22,12 +23,12 @@ export function matchZone(
       };
     }
 
-    if (urlPath.startsWith(base + '/')) {
-      const subPath = urlPath.slice(base.length);
+    if (urlPath.startsWith(base === '/' ? '/' : base + '/')) {
+      const subPath = base === '/' ? urlPath : urlPath.slice(base.length);
       return {
         zoneName,
         config,
-        subPath: subPath.length > 0 ? subPath : '/',
+        subPath,
       };
     }
   }
@@ -43,13 +44,22 @@ export function resolveZoneTargetUrl(pathname: string, zoneConfig: HostZoneConfi
 
 export function isZoneAssetRequest(pathname: string, basePath: string): boolean {
   const normalizedBase = normalizeBasePath(basePath);
-  const cleanPath = pathname.split('?')[0];
+  let pathOnly = pathname;
+  try {
+    if (pathname.includes('://')) {
+      pathOnly = new URL(pathname).pathname;
+    }
+  } catch {
+    // Keep pathname
+  }
+  const cleanPath = pathOnly.startsWith('/') ? pathOnly : '/' + pathOnly;
+  const noQueryPath = cleanPath.split('?')[0];
 
-  if (!cleanPath.startsWith(normalizedBase)) {
+  if (!noQueryPath.startsWith(normalizedBase)) {
     return false;
   }
 
-  const sub = cleanPath.slice(normalizedBase.length);
+  const sub = noQueryPath.slice(normalizedBase.length);
 
   const isAssets = sub.startsWith('/assets/');
   const isViteInternal = sub.startsWith('/@') || sub.startsWith('/__');

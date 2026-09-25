@@ -1,8 +1,8 @@
 # ⚡ treez-federal
 
-> **Next.js Multi-Zones architecture for Vite and Rolldown with first-class TanStack Router integration.**
+> **Treez Federal - Micro-Frontend Architecture with Vite, Rolldown and TanStack Router.**
 
-`treez-federal` brings the **Multi-Zones** architecture (popularized by Next.js) into the Vite SPA ecosystem. It enables large frontend teams to split monolithic applications into independently developed, tested, and deployed sub-applications ("zones") while maintaining seamless, client-side SPA navigation without hard page reloads (F5).
+`treez-federal` is a library that brings the **Multi-Zones** architecture (popularized by Next.js) into the Vite SPA ecosystem. It enables large frontend teams to split monolithic applications into independently developed, tested, and deployed sub-applications ("zones") while maintaining seamless, client-side SPA navigation without hard page reloads (F5).
 
 ---
 

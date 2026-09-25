@@ -44,6 +44,19 @@ describe('zone-matcher', () => {
     expect(settingsMatch).not.toBeNull();
     expect(settingsMatch?.zoneName).toBe('settings');
     expect(settingsMatch?.subPath).toBe('/account');
+
+    const queryMatch = matchZone('/dashboard?tab=overview#section', zones);
+    expect(queryMatch?.zoneName).toBe('dashboard');
+    expect(queryMatch?.subPath).toBe('/');
+
+    // Test root zone match
+    const rootZoneMatch = matchZone('/feed', { root: { basePath: '/' } });
+    expect(rootZoneMatch?.zoneName).toBe('root');
+    expect(rootZoneMatch?.subPath).toBe('/feed');
+
+    const rootExactMatch = matchZone('/', { root: { basePath: '/' } });
+    expect(rootExactMatch?.zoneName).toBe('root');
+    expect(rootExactMatch?.subPath).toBe('/');
   });
 
   it('returns null for non-matching paths', () => {
@@ -55,6 +68,15 @@ describe('zone-matcher', () => {
   it('resolves target URLs correctly', () => {
     const url = resolveZoneTargetUrl('/dashboard/assets/app.js', zones.dashboard);
     expect(url).toBe('http://localhost:3001/dashboard/assets/app.js');
+
+    const defaultUrl = resolveZoneTargetUrl('dashboard/assets/app.js', { basePath: '/dashboard' });
+    expect(defaultUrl).toBe('http://localhost/dashboard/assets/app.js');
+
+    const trimmedTargetUrl = resolveZoneTargetUrl('/dashboard/app.js', {
+      basePath: '/dashboard',
+      target: 'http://localhost:3001///',
+    });
+    expect(trimmedTargetUrl).toBe('http://localhost:3001/dashboard/app.js');
   });
 
   it('detects zone asset requests accurately', () => {
@@ -70,5 +92,8 @@ describe('zone-matcher', () => {
     // Standard HTML navigation is not an asset request:
     expect(isZoneAssetRequest('/dashboard', '/dashboard')).toBe(false);
     expect(isZoneAssetRequest('/dashboard/overview', '/dashboard')).toBe(false);
+
+    // Path that does not start with normalized base:
+    expect(isZoneAssetRequest('/other-zone/assets/main.js', '/dashboard')).toBe(false);
   });
 });
