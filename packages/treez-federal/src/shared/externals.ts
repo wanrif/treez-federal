@@ -1,4 +1,8 @@
-import { RESOLVED_VIRTUAL_SHARED_PREFIX, VIRTUAL_SHARED_PREFIX } from '../constants';
+import {
+  DEFAULT_SHARED,
+  RESOLVED_VIRTUAL_SHARED_PREFIX,
+  VIRTUAL_SHARED_PREFIX,
+} from '../constants';
 
 const KNOWN_REACT_EXPORTS: readonly string[] = [
   'Children',
@@ -45,6 +49,12 @@ const KNOWN_REACT_DOM_EXPORTS: readonly string[] = [
   'flushSync',
   'unmountComponentAtNode',
   'version',
+];
+
+const KNOWN_REACT_DOM_CLIENT_EXPORTS: readonly string[] = [
+  'createPortal',
+  'createRoot',
+  'hydrateRoot',
 ];
 
 const KNOWN_JSX_EXPORTS: readonly string[] = ['Fragment', 'jsx', 'jsxs'];
@@ -96,12 +106,41 @@ const KNOWN_ROUTER_EXPORTS: readonly string[] = [
   'Link',
 ];
 
+export function normalizeSharedList(shared?: readonly string[]): string[] {
+  const baseList = shared && shared.length > 0 ? [...shared] : [...DEFAULT_SHARED];
+  const result: string[] = [];
+
+  for (const pkg of baseList) {
+    if (!result.includes(pkg)) {
+      result.push(pkg);
+    }
+  }
+
+  if (result.includes('react')) {
+    if (!result.includes('react/jsx-runtime')) {
+      result.push('react/jsx-runtime');
+    }
+    if (!result.includes('react/jsx-dev-runtime')) {
+      result.push('react/jsx-dev-runtime');
+    }
+  }
+
+  if (result.includes('react-dom') && !result.includes('react-dom/client')) {
+    result.push('react-dom/client');
+  }
+
+  return result;
+}
+
 export function getKnownSharedExports(pkgName: string): readonly string[] | null {
   if (pkgName === 'react') {
     return KNOWN_REACT_EXPORTS;
   }
   if (pkgName === 'react-dom') {
     return KNOWN_REACT_DOM_EXPORTS;
+  }
+  if (pkgName === 'react-dom/client') {
+    return KNOWN_REACT_DOM_CLIENT_EXPORTS;
   }
   if (pkgName === 'react/jsx-runtime') {
     return KNOWN_JSX_EXPORTS;

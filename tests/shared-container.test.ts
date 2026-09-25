@@ -11,6 +11,7 @@ import {
   createSharedVirtualModule,
   fromSharedVirtualId,
   isSharedPackage,
+  normalizeSharedList,
   toResolvedSharedVirtualId,
   toSharedVirtualId,
 } from '../packages/treez-federal/src/shared/externals';
@@ -53,5 +54,19 @@ describe('shared-container', () => {
     expect(code).toContain('export const useState');
     expect(code).toContain('export const useEffect');
     expect(code).toContain('export default _defaultExport;');
+
+    const jsxDevCode = createSharedVirtualModule('react/jsx-dev-runtime');
+    expect(jsxDevCode).toContain('export const jsxDEV');
+    expect(jsxDevCode).toContain('export const Fragment');
+  });
+
+  it('normalizes shared list to include jsx-runtime and react-dom client', () => {
+    const list = normalizeSharedList(['react', 'react-dom', '@tanstack/react-router']);
+    expect(list).toContain('react');
+    expect(list).toContain('react-dom');
+    expect(list).toContain('react/jsx-runtime');
+    expect(list).toContain('react/jsx-dev-runtime');
+    expect(list).toContain('react-dom/client');
+    expect(list).toContain('@tanstack/react-router');
   });
 });

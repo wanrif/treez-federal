@@ -12,6 +12,7 @@ export default defineConfig({
   dts: {
     generator: 'oxc',
   },
+  publint: true,
   deps: {
     neverBundle: ['vite', 'rolldown', 'react', 'react-dom', '@tanstack/react-router', /^node:/],
   },

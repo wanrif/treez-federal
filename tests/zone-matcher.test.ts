@@ -61,8 +61,11 @@ describe('zone-matcher', () => {
     expect(isZoneAssetRequest('/dashboard/assets/main.js', '/dashboard')).toBe(true);
     expect(isZoneAssetRequest('/dashboard/zoneEntry.js', '/dashboard')).toBe(true);
     expect(isZoneAssetRequest('/dashboard/@vite/client', '/dashboard')).toBe(true);
+    expect(isZoneAssetRequest('/dashboard/@react-refresh', '/dashboard')).toBe(true);
     expect(isZoneAssetRequest('/dashboard/logo.svg', '/dashboard')).toBe(true);
+    expect(isZoneAssetRequest('/dashboard/favicon.ico', '/dashboard')).toBe(true);
     expect(isZoneAssetRequest('/dashboard/src/main.tsx', '/dashboard')).toBe(true);
+    expect(isZoneAssetRequest('/dashboard/some-module?import', '/dashboard')).toBe(true);
 
     // Standard HTML navigation is not an asset request:
     expect(isZoneAssetRequest('/dashboard', '/dashboard')).toBe(false);

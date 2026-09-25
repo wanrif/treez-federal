@@ -1,8 +1,10 @@
 import * as TanStackRouter from '@tanstack/react-router';
 import { createRootRoute, createRouter, RouterProvider } from '@tanstack/react-router';
+import { initSharedContainer } from '@wanrif/treez-federal/runtime';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { initSharedContainer } from 'treez-federal/runtime';
+import * as JsxDevRuntime from 'react/jsx-dev-runtime';
+import * as JsxRuntime from 'react/jsx-runtime';
 
 import { createZoneRoutes } from './routes/index';
 
@@ -10,6 +12,9 @@ import { createZoneRoutes } from './routes/index';
 const container = initSharedContainer();
 container.set('react', React);
 container.set('react-dom', ReactDOM);
+container.set('react-dom/client', ReactDOM);
+container.set('react/jsx-runtime', JsxRuntime);
+container.set('react/jsx-dev-runtime', JsxDevRuntime);
 container.set('@tanstack/react-router', TanStackRouter);
 
 const rootRoute = createRootRoute();

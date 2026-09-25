@@ -52,12 +52,16 @@ export function isZoneAssetRequest(pathname: string, basePath: string): boolean 
   const sub = cleanPath.slice(normalizedBase.length);
 
   const isAssets = sub.startsWith('/assets/');
-  const isViteClient =
-    sub.startsWith('/@vite/') || sub.startsWith('/@fs/') || sub.startsWith('/@id/');
+  const isViteInternal = sub.startsWith('/@') || sub.startsWith('/__');
   const isEntry = sub.endsWith('/zoneEntry.js') || sub === '/zoneEntry.js';
   const isSource = sub.startsWith('/src/') || sub.startsWith('/node_modules/');
   const isStaticFile =
-    /\.(js|mjs|css|svg|png|jpg|jpeg|gif|webp|woff|woff2|ttf|eot|json|map)$/i.test(sub);
+    /\.(js|mjs|cjs|ts|tsx|jsx|css|scss|sass|less|svg|png|jpg|jpeg|gif|webp|ico|woff|woff2|ttf|eot|json|map|wasm)$/i.test(
+      sub,
+    );
+  const hasViteQuery = /[?&](import|raw|url|worker|direct)/.test(pathname);
 
-  return isAssets || isViteClient || isEntry || isSource || isStaticFile ? true : false;
+  return isAssets || isViteInternal || isEntry || isSource || isStaticFile || hasViteQuery
+    ? true
+    : false;
 }

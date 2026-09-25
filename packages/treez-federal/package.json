@@ -1,6 +1,6 @@
 {
-  "name": "treez-federal",
-  "version": "0.1.0",
+  "name": "@wanrif/treez-federal",
+  "version": "0.1.1",
   "description": "Next.js Multi-Zones architecture for Vite and Rolldown with first-class TanStack Router integration.",
   "files": [
     "dist"
@@ -26,6 +26,8 @@
   },
   "scripts": {
     "build": "tsdown",
+    "build:pack": "tsdown && bun pm pack --destination ./dist",
+    "pack": "bun pm pack --destination ./dist",
     "dev": "tsdown --watch",
     "test": "vitest",
     "typecheck": "tsc --noEmit"

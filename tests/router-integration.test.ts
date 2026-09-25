@@ -45,5 +45,10 @@ describe('router-integration', () => {
     expect(router.routesById).toHaveProperty('/dashboard');
     expect(router.routesById).toHaveProperty('/dashboard/');
     expect(router.routesById).toHaveProperty('/dashboard/$');
+
+    // Child routes should render ZoneOutlet so they do not duplicate ZoneHostComponent
+    const indexRoute = router.routesById['/dashboard/'] as any;
+    const indexElement = indexRoute.options.component();
+    expect(indexElement.type.name).toBe('ZoneOutlet');
   });
 });

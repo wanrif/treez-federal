@@ -203,7 +203,7 @@ export function createZoneRoute(options: CreateZoneRouteOptions): AnyRoute {
     },
     path: '/',
     component: function ZoneIndexRoute(): ReactElement | null {
-      return createElement(ZoneHostComponent, { options });
+      return createElement(ZoneOutlet);
     },
   });
 
@@ -213,7 +213,7 @@ export function createZoneRoute(options: CreateZoneRouteOptions): AnyRoute {
     },
     path: '$',
     component: function ZoneSplatRoute(): ReactElement | null {
-      return createElement(ZoneHostComponent, { options });
+      return createElement(ZoneOutlet);
     },
   });
 

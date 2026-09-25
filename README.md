@@ -45,17 +45,17 @@ graph TD
 
 ## 📦 Installation
 
-Install `treez-federal` in your host orchestrator and remote zone projects:
+Install `@wanrif/treez-federal` in your host orchestrator and remote zone projects:
 
 ```bash
 # Bun
-bun add treez-federal
+bun add @wanrif/treez-federal
 
 # npm
-npm install treez-federal
+npm install @wanrif/treez-federal
 
 # pnpm
-pnpm add treez-federal
+pnpm add @wanrif/treez-federal
 ```
 
 ### Peer Dependencies
@@ -78,7 +78,7 @@ A remote zone is an independent Vite application configured with `mode: 'zone'`.
 
 ```ts
 import { defineConfig } from 'vite';
-import { federal } from 'treez-federal';
+import { federal } from '@wanrif/treez-federal';
 
 export default defineConfig({
   base: '/dashboard/',
@@ -144,6 +144,19 @@ export function DashboardLayout() {
 }
 ```
 
+#### 4. Zone Index View (`src/views/DashboardIndex.tsx`)
+
+```tsx
+export function DashboardIndex() {
+  return (
+    <div className="dashboard-index">
+      <h3>Dashboard Home</h3>
+      <p>Rendered inside the host shell layout via nested routing!</p>
+    </div>
+  );
+}
+```
+
 ---
 
 ### Step 2: Configure Host Shell (`shell-host`)
@@ -154,7 +167,7 @@ The Host Shell is the orchestrator application running on `port 3000` (or root d
 
 ```ts
 import { defineConfig } from 'vite';
-import { federal } from 'treez-federal';
+import { federal } from '@wanrif/treez-federal';
 
 export default defineConfig({
   server: {
@@ -178,11 +191,11 @@ export default defineConfig({
 
 #### 2. Mount Zone in Router (`src/router.tsx`)
 
-Use `createZoneRoute` from `treez-federal/router` to connect the remote zone:
+Use `createZoneRoute` from `@wanrif/treez-federal/router` to connect the remote zone:
 
 ```tsx
 import { createRootRoute, createRouter, createRoute } from '@tanstack/react-router';
-import { createZoneRoute } from 'treez-federal/router';
+import { createZoneRoute } from '@wanrif/treez-federal/router';
 import { ShellLayout } from './ShellLayout';
 
 const rootRoute = createRootRoute({
@@ -304,7 +317,7 @@ The main Vite plugin factory. Accepts either a host configuration or a zone conf
 
 ### `createZoneRoute(options: CreateZoneRouteOptions): AnyRoute`
 
-Exported from `treez-federal/router`. Creates a TanStack Router route that dynamically loads and mounts a remote zone.
+Exported from `@wanrif/treez-federal/router`. Creates a TanStack Router route that dynamically loads and mounts a remote zone.
 
 | Option           | Type                            | Description                                                                |
 | :--------------- | :------------------------------ | :------------------------------------------------------------------------- |
@@ -315,11 +328,26 @@ Exported from `treez-federal/router`. Creates a TanStack Router route that dynam
 | `loaderFallback` | `() => ReactNode`               | _(Optional)_ React component to render while the remote zone module loads. |
 | `errorFallback`  | `(error: unknown) => ReactNode` | _(Optional)_ React component to render if loading the remote zone fails.   |
 
+#### Additional Router Utilities
+
+- **`ZoneOutlet`**: Exported from `@wanrif/treez-federal/router`. A drop-in outlet component for zone layout components that renders the currently matched zone child route.
+- **`useZoneContext()`**: Hook returning `{ zoneName, basePath, activeChildComponent }` for the current zone.
+
+---
+
+### Shared Scope Normalization
+
+When configuring `shared: ['react', 'react-dom', '@tanstack/react-router']`, `treez-federal` automatically performs smart normalization:
+
+- Sharing `'react'` automatically includes `'react/jsx-runtime'` and `'react/jsx-dev-runtime'`.
+- Sharing `'react-dom'` automatically includes `'react-dom/client'`.
+- Host shared initializer inlines the runtime container setup directly into the `<head>` preamble script, ensuring zero external request overhead and no `504 Outdated Optimize Dep` bundling delays in Vite / Rolldown dev mode.
+
 ---
 
 ### Runtime Container APIs
 
-Exported from `treez-federal/runtime`:
+Exported from `@wanrif/treez-federal/runtime`:
 
 ```ts
 import {
@@ -328,7 +356,7 @@ import {
   getSharedModule,
   setSharedModule,
   hasSharedModule,
-} from 'treez-federal/runtime';
+} from '@wanrif/treez-federal/runtime';
 
 // Retrieve global singleton container
 const container = getSharedContainer();
@@ -350,14 +378,27 @@ The repository includes two example zones in `examples/`:
 
 ### Start Both Zones
 
-Open two terminal windows:
+You can start both zones directly using monorepo root scripts:
 
 ```bash
 # Terminal 1: Start Dashboard Zone (Port 3001)
-bun run --cwd examples/dashboard-zone dev
+bun run example:dashboard
 
 # Terminal 2: Start Host Shell (Port 3000)
+bun run example:shell
+```
+
+Or run via `--cwd`:
+
+```bash
+bun run --cwd examples/dashboard-zone dev
 bun run --cwd examples/shell-host dev
+```
+
+You can also test building both example projects:
+
+```bash
+bun run example:build
 ```
 
 Visit **`http://localhost:3000`** in your browser:

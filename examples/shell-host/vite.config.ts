@@ -11,6 +11,18 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      '@wanrif/treez-federal/router': path.resolve(
+        currentDir,
+        '../../packages/treez-federal/src/runtime/router.ts',
+      ),
+      '@wanrif/treez-federal/runtime': path.resolve(
+        currentDir,
+        '../../packages/treez-federal/src/runtime/index.ts',
+      ),
+      '@wanrif/treez-federal': path.resolve(
+        currentDir,
+        '../../packages/treez-federal/src/index.ts',
+      ),
       'treez-federal/router': path.resolve(
         currentDir,
         '../../packages/treez-federal/src/runtime/router.ts',

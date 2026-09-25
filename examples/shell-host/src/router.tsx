@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 
 import { createRootRoute, createRouter, createRoute } from '@tanstack/react-router';
-import { createZoneRoute } from 'treez-federal/router';
+import { createZoneRoute } from '@wanrif/treez-federal/router';
 
 import { ShellLayout } from './ShellLayout';
 

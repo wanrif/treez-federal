@@ -14,6 +14,10 @@
     "skipLibCheck": true,
     "jsx": "react-jsx",
     "paths": {
+      "@wanrif/treez-federal": ["./packages/treez-federal/src/index.ts"],
+      "@wanrif/treez-federal/router": ["./packages/treez-federal/src/runtime/router.ts"],
+      "@wanrif/treez-federal/runtime": ["./packages/treez-federal/src/runtime/index.ts"],
+      "@wanrif/treez-federal/*": ["./packages/treez-federal/src/*"],
       "treez-federal": ["./packages/treez-federal/src/index.ts"],
       "treez-federal/router": ["./packages/treez-federal/src/runtime/router.ts"],
       "treez-federal/runtime": ["./packages/treez-federal/src/runtime/index.ts"],

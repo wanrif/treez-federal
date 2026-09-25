@@ -4,6 +4,7 @@ export const DEFAULT_SHARED: readonly string[] = [
   '@tanstack/react-router',
   'react/jsx-runtime',
   'react/jsx-dev-runtime',
+  'react-dom/client',
 ];
 
 export const GLOBAL_CONTAINER_KEY: string = '__TREEZ_FEDERAL_SHARED__';
