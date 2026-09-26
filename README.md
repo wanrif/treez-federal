@@ -1,8 +1,31 @@
-# ⚡ treez-federal
+<p align="center">
+  <img src="./public/assets/treez-federal-text.png" alt="treez-federal logo" width="700" />
+</p>
 
-> **Treez Federal - Micro-Frontend Architecture with Vite, Rolldown and TanStack Router.**
+<p align="center">
+  <strong>Next-Gen Micro-Frontend Multi-Zone Architecture for Vite, Rolldown & TanStack Router</strong>
+</p>
 
-`treez-federal` is a library that brings the **Multi-Zones** architecture (popularized by Next.js) into the Vite SPA ecosystem. It enables large frontend teams to split monolithic applications into independently developed, tested, and deployed sub-applications ("zones") while maintaining seamless, client-side SPA navigation without hard page reloads (F5).
+<p align="center">
+  <a href="https://www.npmjs.com/package/@wanrif/treez-federal"><img src="https://img.shields.io/npm/v/@wanrif/treez-federal.svg?style=flat&colorA=18181B&colorB=06B6D4" alt="npm version" /></a>
+  <img src="https://img.shields.io/badge/license-MIT-10B981.svg?style=flat&colorA=18181B" alt="license" />
+  <img src="https://img.shields.io/badge/Vite-8-646CFF.svg?style=flat&colorA=18181B" alt="Vite version" />
+  <img src="https://img.shields.io/badge/React-18%20|%2019-61DAFB.svg?style=flat&colorA=18181B" alt="React version" />
+  <img src="https://img.shields.io/badge/TanStack_Router-v1-FF4154.svg?style=flat&colorA=18181B" alt="TanStack Router" />
+</p>
+
+<p align="center">
+  <a href="#-key-features">Key Features</a> •
+  <a href="#-architecture-overview">Architecture</a> •
+  <a href="#-quick-start-guide">Quick Start</a> •
+  <a href="#%EF%B8%8F-how-it-works-under-the-hood">How It Works</a> •
+  <a href="#-api-reference">API Reference</a> •
+  <a href="#%EF%B8%8F-running-the-included-examples">Examples</a>
+</p>
+
+---
+
+`treez-federal` brings the **Multi-Zones** architecture (popularized by Next.js) into the Vite and Rolldown SPA ecosystem. It enables large frontend teams to split monolithic applications into independently developed, tested, and deployed sub-applications (**"zones"**) while maintaining seamless, client-side SPA navigation without hard page reloads (F5).
 
 ---
 
